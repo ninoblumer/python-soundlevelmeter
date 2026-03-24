@@ -1,17 +1,17 @@
 # Todo
 
 ## Open
-- [ ] #2 **Real-time audio controller** — no soundcard/JACK/ALSA controller. make sure that calibrate also works with realtime signal. maybe stop, once a stable tone was seen and averaged for long enough?
 - [ ] #5 **README.md** — update to reflect current architecture (Engine, Bus, Reporter, plugins, meters)
 - [ ] #6 **LICENSE** — add/update license file
 - [ ] #20 **Add `__init__.py` re-exports for `slm/io/` and `slm/app/`** — flatten public API so callers can use e.g. `from slm.io import FileController` instead of the full submodule path
 
-
 ## Optional
 - [ ] #17 **FFT-based A-weighting (optional improvement)** — replace the bilinear-transform IIR in `PluginAWeighting` with a frequency-domain analytical A-weighting to reduce broadband LAeq error from −0.17 dB to ±0.05 dB vs XL2. Requires overlap-add block processing; incompatible with current real-time time-weighted plugins (LASmax etc.) on the same bus without a parallel path. Pre-requisite: split the bus into a Leq-only FFT path and a time-weighting IIR path.
 - [ ] #23 **use different filter for frequency-weighting** - use different design method (pre-warping, impulse invariance or so)
-- 
+- [ ] #25 **Discoverable output device** — make the SLM appear as a connectable audio sink so other software can route audio to it without a hardware loopback. On Linux/macOS: `JackController` (JACK client with named input ports; works transparently with PipeWire on modern Linux). On Windows: not reliably feasible without a third-party virtual audio cable driver.
+
 ## Done
+- [x] #2 **Real-time audio controller** — `RealtimeController` ABC + `SounddeviceController` (PortAudio, cross-platform); stability-detection calibration; `--device`/`--list-devices`/`--samplerate` CLI flags; 15 unit tests.
 - [x] #21 **Redo calibration routine** — `PluginBandpass` added; core `slm/calibration.py` is controller-agnostic; `calibrate_from_file` in `slm/app/cli.py`; `--cal-freq` CLI flag; 2 new unit tests.
 - [x] #24 **conformance tests should record how "well" they passed** — `report=True` pattern on all conformance test methods; `scripts/conformance_report.py` calls them directly and prints margin tables
 - [x] #22 **tidy up tests/ folder** - add sub folders and group tests together

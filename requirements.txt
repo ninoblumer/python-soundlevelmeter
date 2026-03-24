@@ -1,6 +1,7 @@
 numpy==2.3.5
 scipy==1.17.0
 soundfile==0.13.1
+sounddevice==0.5.5
 
 matplotlib==3.10.8
 pytest==9.0.2

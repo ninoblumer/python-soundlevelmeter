@@ -31,7 +31,21 @@ def _build_parser() -> argparse.ArgumentParser:
         description="Sound Level Meter — IEC 61672-1 compliant measurement tool.",
     )
 
-    parser.add_argument("--file", metavar="PATH", help="Input WAV file")
+    # Input source: --file and --device are mutually exclusive
+    source_group = parser.add_mutually_exclusive_group()
+    source_group.add_argument("--file", metavar="PATH", help="Input WAV file")
+    source_group.add_argument(
+        "--device", metavar="INDEX_OR_NAME",
+        help="Real-time audio input device index or name substring (use --list-devices to see options)",
+    )
+    parser.add_argument(
+        "--list-devices", action="store_true",
+        help="List available audio input devices and exit",
+    )
+    parser.add_argument(
+        "--samplerate", type=int, default=48_000, metavar="HZ",
+        help="Sample rate for real-time input (default: 48000)",
+    )
     parser.add_argument(
         "--interactive", "-i", action="store_true",
         help="Start the interactive REPL (default when no action flags are given)",
@@ -106,7 +120,23 @@ def main() -> None:
     # ------------------------------------------------------------------ #
     # Interactive REPL                                                     #
     # ------------------------------------------------------------------ #
-    no_action = not args.file and not args.calibrate and not args.measure and not args.config
+    # --list-devices: print table and exit
+    if args.list_devices:
+        from slm.io.sounddevice_controller import SounddeviceController
+        devices = SounddeviceController.list_devices()
+        if not devices:
+            print("No input devices found.")
+        else:
+            from slm.app.cli import _fmt_device_table
+            print(_fmt_device_table(devices))
+        return
+
+    # --realtime requires --file
+    if args.realtime and not args.file:
+        parser.error("--realtime requires --file")
+
+    no_action = (not args.file and args.device is None
+                 and not args.calibrate and not args.measure and not args.config)
     if no_action:
         # Bare invocation — open an empty shell
         from slm.app.cli import SLMShell
@@ -133,23 +163,42 @@ def main() -> None:
                 output=args.output if args.output is not None else "output/measurement",
             )
 
-        SLMShell(
+        # Parse device: try int, fall back to string
+        device = None
+        if args.device is not None:
+            try:
+                device = int(args.device)
+            except ValueError:
+                device = args.device
+
+        shell = SLMShell(
             wav_path=args.file,
             sensitivity_v=_resolve_sensitivity(args),
             config=config,
-        ).cmdloop()
+        )
+        shell._device = device
+        shell.cmdloop()
         return
 
     # ------------------------------------------------------------------ #
     # Calibration mode                                                     #
     # ------------------------------------------------------------------ #
     if args.calibrate:
-        if not args.file:
-            parser.error("--calibrate requires --file")
+        if not args.file and args.device is None:
+            parser.error("--calibrate requires --file or --device")
         if _resolve_sensitivity(args) is not None:
             parser.error("--calibrate cannot be combined with a sensitivity flag")
-        from slm.app.cli import calibrate_from_file, _fmt_sensitivity
-        sens = calibrate_from_file(args.file, cal_freq=args.cal_freq, cal_level=args.cal_level)
+        from slm.app.cli import calibrate_from_file, calibrate_from_device, _fmt_sensitivity
+        if args.file:
+            sens = calibrate_from_file(args.file, cal_freq=args.cal_freq, cal_level=args.cal_level)
+        else:
+            print("Listening for calibrator tone — will stop automatically when stable ...")
+            sens = calibrate_from_device(
+                device=args.device,
+                samplerate=args.samplerate,
+                cal_freq=args.cal_freq,
+                cal_level=args.cal_level,
+            )
         print(f"Sensitivity: {_fmt_sensitivity(sens)}")
         return
 
@@ -180,8 +229,8 @@ def main() -> None:
             output=args.output if args.output is not None else "output/measurement",
         )
 
-    if not args.file:
-        parser.error("--file is required for one-shot measurement")
+    if not args.file and args.device is None:
+        parser.error("--file or --device is required for one-shot measurement")
 
     sens = _resolve_sensitivity(args)
     if sens is None:
@@ -190,7 +239,16 @@ def main() -> None:
             "--sensitivity-dbv DBV, or --sensitivity-mv MV"
         )
 
-    run_measurement(args.file, sens, config, print_to_console=True, realtime=args.realtime)
+    if args.file:
+        run_measurement(args.file, sens, config, print_to_console=True, realtime=args.realtime)
+    else:
+        from slm.app.cli import run_realtime_measurement
+        run_realtime_measurement(
+            sens, config,
+            device=args.device,
+            samplerate=args.samplerate,
+            print_to_console=True,
+        )
 
 
 if __name__ == "__main__":

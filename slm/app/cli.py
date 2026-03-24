@@ -36,6 +36,25 @@ def sensitivity_from_dbv(dbv: float) -> float:
     return 10 ** (dbv / 20)
 
 
+def _fmt_device_table(devices: list[dict]) -> str:
+    """Format a list of audio input devices as a wrapped-name table string."""
+    import textwrap
+    NAME_WIDTH = 44
+    lines = [
+        f"  {'IDX':>4}  {'NAME':<{NAME_WIDTH}}  {'CH':>3}  {'FS / Hz':>8}",
+        f"  {'-' * 4}  {'-' * NAME_WIDTH}  {'-' * 3}  {'-' * 8}",
+    ]
+    for d in devices:
+        name_lines = textwrap.wrap(d["name"], NAME_WIDTH) or [""]
+        lines.append(
+            f"  {d['index']:>4}  {name_lines[0]:<{NAME_WIDTH}}  "
+            f"{d['max_input_channels']:>3}  {d['default_samplerate']:>8.0f}"
+        )
+        for cont in name_lines[1:]:
+            lines.append(f"  {'':>4}  {cont:<{NAME_WIDTH}}")
+    return "\n".join(lines)
+
+
 def _fmt_sensitivity(sens_v: float) -> str:
     """Format sensitivity value in mV and dBV."""
     mv = sens_v * 1000.0
@@ -67,6 +86,48 @@ def calibrate_from_file(
     controller = FileController(str(wav_path), blocksize=blocksize)
     controller.set_sensitivity(1.0, unit="V")   # dummy — just need raw WAV values
     return calibrate_sensitivity(controller, cal_freq=cal_freq, cal_level=cal_level)
+
+
+# ---------------------------------------------------------------------------
+# Device calibration
+# ---------------------------------------------------------------------------
+
+def calibrate_from_device(
+    device: int | str | None = None,
+    samplerate: int = 48_000,
+    blocksize: int = 1_024,
+    cal_freq: float = 1000.0,
+    cal_level: float = 94.0,
+    stability_window: int = 10,
+    stability_threshold: float = 0.1,
+) -> float:
+    """Derive sensitivity from a live calibrator tone via a real-time input device.
+
+    Opens the audio stream, waits until the bandpass-filtered Leq has converged
+    (rolling std-dev < *stability_threshold* dB over *stability_window* half-second
+    readings), then stops automatically.
+
+    Returns a value suitable for ``controller.set_sensitivity(result, unit="V")``.
+    """
+    from slm.io.sounddevice_controller import SounddeviceController
+    from slm.calibration import calibrate_sensitivity
+
+    controller = SounddeviceController(
+        device=device, samplerate=samplerate, blocksize=blocksize
+    )
+    controller.set_sensitivity(1.0, unit="V")
+    controller.start()
+    try:
+        sens = calibrate_sensitivity(
+            controller,
+            cal_freq=cal_freq,
+            cal_level=cal_level,
+            stability_window=stability_window,
+            stability_threshold=stability_threshold,
+        )
+    finally:
+        controller.stop()
+    return sens
 
 
 # ---------------------------------------------------------------------------
@@ -112,6 +173,58 @@ def run_measurement(
 
 
 # ---------------------------------------------------------------------------
+# Real-time measurement
+# ---------------------------------------------------------------------------
+
+def run_realtime_measurement(
+    sensitivity_v: float,
+    config: "SLMConfig",
+    device: int | str | None = None,
+    samplerate: int = 48_000,
+    blocksize: int = 1_024,
+    print_to_console: bool = False,
+    display_mode: str = "plain",
+) -> None:
+    """Start a live measurement from a real-time audio input device.
+
+    The engine runs until ``KeyboardInterrupt`` (Ctrl+C), at which point the
+    stream is stopped and results are written to *config.output*.
+    """
+    if sensitivity_v <= 0:
+        raise ValueError(f"sensitivity_v must be positive, got {sensitivity_v}")
+    from slm.assembly import parse_metric, build_chain
+    from slm.io.sounddevice_controller import SounddeviceController
+    from slm.engine import Engine
+    from slm.io.reporter import Reporter
+    from slm.io.display import make_display_fn
+
+    specs = [parse_metric(m) for m in config.metrics]
+
+    controller = SounddeviceController(
+        device=device, samplerate=samplerate, blocksize=blocksize
+    )
+    controller.set_sensitivity(sensitivity_v, unit="V")
+    controller.start()
+
+    engine = Engine(controller, dt=config.dt)
+    display_fn = make_display_fn(display_mode, precision=2) if print_to_console else None
+    reporter = Reporter(precision=2, print_to_console=print_to_console, display_fn=display_fn)
+    engine.reporter = reporter
+
+    build_chain(specs, engine, reporter)
+
+    try:
+        engine.run()
+    except KeyboardInterrupt:
+        print("\nMeasurement interrupted.")
+        controller.stop()
+    finally:
+        if controller.overruns:
+            print(f"Warning: {controller.overruns} block(s) dropped (engine too slow).")
+        reporter.write(config.output)
+
+
+# ---------------------------------------------------------------------------
 # Interactive shell
 # ---------------------------------------------------------------------------
 
@@ -139,6 +252,7 @@ class SLMShell(cmd.Cmd):
         self._sensitivity_v = sensitivity_v
         self._display_mode: str = "plain"
         self._realtime: bool = False
+        self._device: int | str | None = None
 
     # ------------------------------------------------------------------
     # Metric management
@@ -192,6 +306,33 @@ Examples:
     # ------------------------------------------------------------------
     # File and sensitivity
     # ------------------------------------------------------------------
+
+    def do_device(self, arg: str) -> None:
+        """device [INDEX_OR_NAME] — list devices or select one for real-time input.
+
+With no argument, prints all available input devices.
+With an argument, sets the active input device (index or name substring).
+
+Examples:
+  device            list all input devices
+  device 0          select device 0
+  device Focusrite  select first device whose name contains 'Focusrite'
+"""
+        from slm.io.sounddevice_controller import SounddeviceController
+        arg = arg.strip()
+        if not arg:
+            devices = SounddeviceController.list_devices()
+            if not devices:
+                print("No input devices found.")
+                return
+            print(_fmt_device_table(devices))
+            return
+        # Try to parse as integer first, else treat as name substring
+        try:
+            self._device = int(arg)
+        except ValueError:
+            self._device = arg
+        print(f"Device: {self._device!r}")
 
     def do_file(self, arg: str) -> None:
         """file PATH — set the WAV file to measure."""
@@ -265,8 +406,8 @@ raw mV/Pa figure from the microphone datasheet.
 Use this when you have a physical calibrator and a recording of it; use
 'sensitivity mv VALUE' when you know the microphone sensitivity directly.
 """
-        if not self._wav_path:
-            print("No file set.  Use: file PATH")
+        if not self._wav_path and self._device is None:
+            print("No source set.  Use: file PATH  or  device INDEX")
             return
         cal_level = 94.0
         cal_freq = 1000.0
@@ -284,7 +425,13 @@ Use this when you have a physical calibrator and a recording of it; use
                 print(f"Invalid calibration frequency: {parts[1]!r}")
                 return
         print(f"Calibrating against {cal_level} dB SPL at {cal_freq} Hz ...")
-        sens = calibrate_from_file(self._wav_path, cal_freq=cal_freq, cal_level=cal_level)
+        if self._wav_path:
+            sens = calibrate_from_file(self._wav_path, cal_freq=cal_freq, cal_level=cal_level)
+        else:
+            print("(Listening for calibrator tone — will stop automatically when stable)")
+            sens = calibrate_from_device(
+                device=self._device, cal_freq=cal_freq, cal_level=cal_level
+            )
         print(f"  Sensitivity: {_fmt_sensitivity(sens)}")
         try:
             answer = input("Set as current sensitivity? [Y/n]: ").strip().lower()
@@ -320,6 +467,7 @@ Use this when you have a physical calibrator and a recording of it; use
     def do_show(self, _: str) -> None:
         """show — display the current configuration."""
         print(f"  File:        {self._wav_path or '(not set)'}")
+        print(f"  Device:      {self._device if self._device is not None else '(not set — file mode)'}")
         print(f"  Sensitivity: {'(not set)' if self._sensitivity_v is None else self._sensitivity_v}")
         print(f"  dt:          {self._config.dt} s")
         print(f"  Output:      {self._config.output}")
@@ -613,8 +761,8 @@ When disabled (default), the file is processed as fast as possible.
 
     def do_start(self, _: str) -> None:
         """start — run the measurement with the current configuration."""
-        if not self._wav_path:
-            print("No file set.  Use: file PATH")
+        if not self._wav_path and self._device is None:
+            print("No source set.  Use: file PATH  or  device INDEX")
             return
         if self._sensitivity_v is None:
             print("No sensitivity set.  Use: sensitivity ... or calibrate")
@@ -622,14 +770,23 @@ When disabled (default), the file is processed as fast as possible.
         if not self._config.metrics:
             print("No metrics set.  Use: add METRIC")
             return
-        run_measurement(
-            self._wav_path,
-            self._sensitivity_v,
-            self._config,
-            print_to_console=True,
-            display_mode=self._display_mode,
-            realtime=self._realtime,
-        )
+        if self._wav_path:
+            run_measurement(
+                self._wav_path,
+                self._sensitivity_v,
+                self._config,
+                print_to_console=True,
+                display_mode=self._display_mode,
+                realtime=self._realtime,
+            )
+        else:
+            run_realtime_measurement(
+                self._sensitivity_v,
+                self._config,
+                device=self._device,
+                print_to_console=True,
+                display_mode=self._display_mode,
+            )
 
     # ------------------------------------------------------------------
     # Exit
