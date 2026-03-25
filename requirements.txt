@@ -1,8 +1,7 @@
 numpy==2.3.5
 scipy==1.17.0
 soundfile==0.13.1
-# optional: real-time audio input (requires PortAudio); omit for file-only use
-sounddevice==0.5.5
+sounddevice==0.5.5  # requires PortAudio; omit manually if running headless without audio hardware
 
 matplotlib==3.10.8
 pytest==9.0.2

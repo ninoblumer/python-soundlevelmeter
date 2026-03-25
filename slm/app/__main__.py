@@ -27,7 +27,7 @@ import sys
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="python -m slm",
+        prog="slm",
         description="Sound Level Meter — IEC 61672-1 compliant measurement tool.",
     )
 

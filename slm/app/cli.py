@@ -235,7 +235,14 @@ class SLMShell(cmd.Cmd):
               show, save, load, start, display, tree, inspect, exit/quit/EOF.
     """
 
-    intro = "SLM interactive shell.  Type 'help' for a list of commands."
+    intro = (
+        "open-spl  Copyright (C) 2026  Nino Blumer\n"
+        "This program comes with ABSOLUTELY NO WARRANTY.\n"
+        "This is free software, and you are welcome to redistribute it\n"
+        "under certain conditions; see LICENSE for details.\n"
+        "\n"
+        "SLM interactive shell.  Type 'help' for a list of commands."
+    )
     prompt = "slm> "
 
     def __init__(

@@ -1,8 +1,8 @@
 # Todo
 
 ## Open
-- [ ] #5 **README.md** — update to reflect current architecture (Engine, Bus, Reporter, plugins, meters)
-- [ ] #6 **LICENSE** — add/update license file
+- [ ] #27 **Streamline Engine construction** — `Engine.__init__` should accept `Reporter` directly (or `reporter_kwargs`) so callers don't need to manually create a `Reporter` and assign `engine.reporter = reporter` as a second step; update `run_measurement`/`run_realtime_measurement` and README accordingly.
+- [ ] #26 **Support arbitrary octave divisions in the CLI/metric syntax** — extend `parse_metric` regex and `MetricSpec` to accept any `N/M` fraction (e.g. `1/6`, `1/12`, `2/3`) in the `:bands:` suffix, not just `1/3`; update `build_chain` and README accordingly.
 
 ## Optional
 - [ ] #17 **FFT-based A-weighting (optional improvement)** — replace the bilinear-transform IIR in `PluginAWeighting` with a frequency-domain analytical A-weighting to reduce broadband LAeq error from −0.17 dB to ±0.05 dB vs XL2. Requires overlap-add block processing; incompatible with current real-time time-weighted plugins (LASmax etc.) on the same bus without a parallel path. Pre-requisite: split the bus into a Leq-only FFT path and a time-weighting IIR path.
@@ -10,6 +10,8 @@
 - [ ] #25 **Discoverable output device** — make the SLM appear as a connectable audio sink so other software can route audio to it without a hardware loopback. On Linux/macOS: `JackController` (JACK client with named input ports; works transparently with PipeWire on modern Linux). On Windows: not reliably feasible without a third-party virtual audio cable driver.
 
 ## Done
+- [x] #5 **README.md** — full rewrite: installation, usage, metric syntax, calibration, architecture, Python API; `pip install --user git+…` hint added.
+- [x] #6 **LICENSE** — replaced acoustic-toolbox BSD with GPL v3 + copyright header; added NOTICE with reproduced BSD/MIT notices for numpy, scipy, soundfile, sounddevice; GPL notice in SLMShell intro.
 - [x] #20 **Add `__init__.py` re-exports for `slm/io/`, `slm/app/`, and `slm/`** — flat public API; `sounddevice` made optional with graceful degradation; 529 tests pass.
 - [x] #2 **Real-time audio controller** — `RealtimeController` ABC + `SounddeviceController` (PortAudio, cross-platform); stability-detection calibration; `--device`/`--list-devices`/`--samplerate` CLI flags; 15 unit tests.
 - [x] #21 **Redo calibration routine** — `PluginBandpass` added; core `slm/calibration.py` is controller-agnostic; `calibrate_from_file` in `slm/app/cli.py`; `--cal-freq` CLI flag; 2 new unit tests.
