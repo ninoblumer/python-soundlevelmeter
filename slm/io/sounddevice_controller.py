@@ -10,7 +10,13 @@ import queue
 import threading
 
 import numpy as np
-import sounddevice as sd
+try:
+    import sounddevice as sd
+except ImportError as _exc:
+    raise ImportError(
+        "Real-time audio requires the sounddevice package. "
+        "Install it with: pip install sounddevice"
+    ) from _exc
 
 from slm.io.realtime_controller import RealtimeController
 

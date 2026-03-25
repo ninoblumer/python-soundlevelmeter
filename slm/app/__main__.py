@@ -113,9 +113,20 @@ def _resolve_sensitivity(args: argparse.Namespace) -> float | None:
     return None
 
 
+def _require_sounddevice(parser: argparse.ArgumentParser) -> None:
+    """Exit with a friendly message if sounddevice is not installed."""
+    try:
+        import slm.io.sounddevice_controller  # noqa: F401
+    except ImportError as exc:
+        parser.error(str(exc))
+
+
 def main() -> None:
     parser = _build_parser()
     args = parser.parse_args()
+
+    if args.list_devices or args.device is not None:
+        _require_sounddevice(parser)
 
     # ------------------------------------------------------------------ #
     # Interactive REPL                                                     #

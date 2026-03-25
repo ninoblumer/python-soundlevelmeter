@@ -9,6 +9,7 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pytest
 
+pytest.importorskip("sounddevice", reason="sounddevice not installed — skipping real-time audio tests")
 from slm.io.sounddevice_controller import SounddeviceController
 
 
