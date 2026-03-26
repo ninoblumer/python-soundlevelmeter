@@ -31,7 +31,7 @@ def pytest_collection_modifyitems(config, items):
                 item.add_marker(skip_slow)
 
 from util.xl2 import XL2_SLM_File
-from slm.constants import REFERENCE_PRESSURE
+from soundlevelmeter.constants import REFERENCE_PRESSURE
 
 DATA_DIR = Path("data/slm-test-01")
 

@@ -10,7 +10,7 @@ import numpy as np
 import pytest
 
 pytest.importorskip("sounddevice", reason="sounddevice not installed — skipping real-time audio tests")
-from slm.io.sounddevice_controller import SounddeviceController
+from soundlevelmeter.io.sounddevice_controller import SounddeviceController
 
 
 # ---------------------------------------------------------------------------
@@ -106,7 +106,7 @@ class TestReadBlock:
         fake = _FakeStream(ctrl._callback, n_blocks, blocksize, channels,
                            on_done=ctrl.stop)
 
-        with patch("slm.io.sounddevice_controller.sd.InputStream",
+        with patch("soundlevelmeter.io.sounddevice_controller.sd.InputStream",
                    return_value=fake):
             ctrl.start()
             blocks = []
@@ -146,7 +146,7 @@ class TestReadBlock:
         ctrl = _make_controller(queue_maxsize=4)
         fake = _FakeStream(ctrl._callback, n_blocks=0, blocksize=1_024, channels=1)
 
-        with patch("slm.io.sounddevice_controller.sd.InputStream",
+        with patch("soundlevelmeter.io.sounddevice_controller.sd.InputStream",
                    return_value=fake):
             ctrl.start()
             ctrl.stop()
@@ -195,7 +195,7 @@ class TestListDevices:
             {"name": "Mic B", "max_input_channels": 2, "default_samplerate": 44_100.0,
              "max_output_channels": 0},
         ]
-        with patch("slm.io.sounddevice_controller.sd.query_devices",
+        with patch("soundlevelmeter.io.sounddevice_controller.sd.query_devices",
                    return_value=fake_devices):
             result = SounddeviceController.list_devices()
 
@@ -209,7 +209,7 @@ class TestListDevices:
             {"name": "X", "max_input_channels": 1, "default_samplerate": 48_000.0,
              "max_output_channels": 0},
         ]
-        with patch("slm.io.sounddevice_controller.sd.query_devices",
+        with patch("soundlevelmeter.io.sounddevice_controller.sd.query_devices",
                    return_value=fake_devices):
             result = SounddeviceController.list_devices()
 
@@ -222,9 +222,9 @@ class TestEngineIntegration:
 
     def test_engine_processes_blocks(self):
         """Engine should accumulate LAeq from fake audio without error."""
-        from slm.engine import Engine
-        from slm.assembly import parse_metric, build_chain
-        from slm.io.reporter import Reporter
+        from soundlevelmeter.engine import Engine
+        from soundlevelmeter.assembly import parse_metric, build_chain
+        from soundlevelmeter.io.reporter import Reporter
 
         n_blocks = 20
         blocksize = 1_024
@@ -238,7 +238,7 @@ class TestEngineIntegration:
         fake = _FakeStream(ctrl._callback, n_blocks, blocksize, channels=1,
                            on_done=ctrl.stop)
 
-        with patch("slm.io.sounddevice_controller.sd.InputStream",
+        with patch("soundlevelmeter.io.sounddevice_controller.sd.InputStream",
                    return_value=fake):
             ctrl.start()
 

@@ -1,13 +1,13 @@
-from slm.meter import LastMovingMeter, MaxMovingMeter, MaxAccumulator
-from slm.plugin_meter import PluginMeter
-from slm.io.reporter import Reporter
+from soundlevelmeter.meter import LastMovingMeter, MaxMovingMeter, MaxAccumulator
+from soundlevelmeter.plugin_meter import PluginMeter
+from soundlevelmeter.io.reporter import Reporter
 from util.xl2 import XL2_SLM_Measurement
 from pathlib import Path
 
-from slm.engine import Engine
-from slm.io.file_controller import FileController
-from slm.octave_band import PluginOctaveBand
-from slm.constants import REFERENCE_PRESSURE
+from soundlevelmeter.engine import Engine
+from soundlevelmeter.io.file_controller import FileController
+from soundlevelmeter.octave_band import PluginOctaveBand
+from soundlevelmeter.constants import REFERENCE_PRESSURE
 
 def main():
     projectname = "slm-test-01"
@@ -29,11 +29,11 @@ def main():
 
     engine = Engine(controller=controller, dt=0.1)
 
-    from slm.frequency_weighting import PluginZWeighting, PluginAWeighting
+    from soundlevelmeter.frequency_weighting import PluginZWeighting, PluginAWeighting
     bus_z = engine.add_bus('Z', PluginZWeighting)
     bus_a = engine.add_bus('A', PluginAWeighting)
 
-    from slm.time_weighting import PluginFastTimeWeighting
+    from soundlevelmeter.time_weighting import PluginFastTimeWeighting
 
     la = bus_a.frequency_weighting
     laf = bus_a.add_plugin(PluginFastTimeWeighting(input=la, zero_zi=True))

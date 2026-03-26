@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 from scipy.signal import lfilter
 
-from slm.time_weighting import asymmetric_time_weighting
+from soundlevelmeter.time_weighting import asymmetric_time_weighting
 
 FS = 48_000          # sample rate used throughout
 RTOL = 1e-3          # 0.1 % tolerance — tight enough to catch the wrong formula

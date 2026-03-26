@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from slm.fifo import FIFO
+from soundlevelmeter.fifo import FIFO
 
 
 class TestFIFOOrdering:

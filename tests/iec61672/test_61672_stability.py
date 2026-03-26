@@ -24,9 +24,9 @@ import types
 import numpy as np
 import pytest
 
-from slm.frequency_weighting import PluginAWeighting
-from slm.meter import LeqAccumulator
-from slm.constants import REFERENCE_PRESSURE
+from soundlevelmeter.frequency_weighting import PluginAWeighting
+from soundlevelmeter.meter import LeqAccumulator
+from soundlevelmeter.constants import REFERENCE_PRESSURE
 
 p0         = REFERENCE_PRESSURE
 SAMPLERATE = 48_000

@@ -3,15 +3,15 @@ from __future__ import annotations
 
 import pytest
 
-from slm.calibration import calibrate_sensitivity
-from slm.app.cli import calibrate_from_file
+from soundlevelmeter.calibration import calibrate_sensitivity
+from soundlevelmeter.app.cli import calibrate_from_file
 
 
 class TestCalibrateFunction:
 
     def test_calibrate_sensitivity_1khz(self, meas_000):
         """Core function with FileController returns sensitivity within 0.1% of reference."""
-        from slm.io.file_controller import FileController
+        from soundlevelmeter.io.file_controller import FileController
 
         controller = FileController(str(meas_000.wav_path), blocksize=1024)
         controller.set_sensitivity(1.0, unit="V")

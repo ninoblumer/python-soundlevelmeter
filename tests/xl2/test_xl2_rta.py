@@ -1,5 +1,5 @@
 """
-Integration tests: compare open-spl octave-band output against NTi XL2 RTA reference.
+Integration tests: compare soundlevelmeter octave-band output against NTi XL2 RTA reference.
 
 SLM_005 is a background-noise recording with no broadband log/report — only an
 RTA report.  We compute per-band LZeq from the WAV and compare against the
@@ -11,10 +11,10 @@ attenuation at low bands, but measurement shows no systematic HPF pattern.
 """
 import numpy as np
 
-from slm.engine import Engine
-from slm.io.file_controller import FileController
-from slm.frequency_weighting import PluginZWeighting
-from slm.octave_band import PluginOctaveBand
+from soundlevelmeter.engine import Engine
+from soundlevelmeter.io.file_controller import FileController
+from soundlevelmeter.frequency_weighting import PluginZWeighting
+from soundlevelmeter.octave_band import PluginOctaveBand
 
 TOLERANCE_RTA_DB = 0.2
 

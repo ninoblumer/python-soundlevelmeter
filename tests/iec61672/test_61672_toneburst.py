@@ -25,7 +25,7 @@ import types
 import numpy as np
 import pytest
 
-from slm.time_weighting import PluginFastTimeWeighting
+from soundlevelmeter.time_weighting import PluginFastTimeWeighting
 
 
 TAU_F   = 0.125  # s — F time constant (IEC 61672-1 §5.8)

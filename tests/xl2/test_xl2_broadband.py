@@ -1,5 +1,5 @@
 """
-Integration tests: compare open-spl output against NTi XL2 reference measurements.
+Integration tests: compare soundlevelmeter output against NTi XL2 reference measurements.
 
 Each test loads a real WAV recording, runs it through the SLM pipeline, and
 checks the result against the XL2's logged/reported values.
@@ -20,11 +20,11 @@ import numpy as np
 import pytest
 from functools import partial
 
-from slm.engine import Engine
-from slm.io.file_controller import FileController
-from slm.frequency_weighting import PluginAWeighting, PluginCWeighting, PluginHPF
-from slm.meter import LeqAccumulator, MaxAccumulator
-from slm.time_weighting import PluginFastTimeWeighting, PluginSlowTimeWeighting, PluginSquare
+from soundlevelmeter.engine import Engine
+from soundlevelmeter.io.file_controller import FileController
+from soundlevelmeter.frequency_weighting import PluginAWeighting, PluginCWeighting, PluginHPF
+from soundlevelmeter.meter import LeqAccumulator, MaxAccumulator
+from soundlevelmeter.time_weighting import PluginFastTimeWeighting, PluginSlowTimeWeighting, PluginSquare
 
 # The XL2 applies an effective ~5 Hz 1-pole HPF in its Z-weighted broadband metering
 # path (empirically fitted: errors drop from ~0.27 dB to < 0.01 dB at fc=5 Hz).

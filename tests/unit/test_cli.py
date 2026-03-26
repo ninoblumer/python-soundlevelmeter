@@ -11,8 +11,8 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-from slm.app.config import SLMConfig
-from slm.app.cli import (
+from soundlevelmeter.app.config import SLMConfig
+from soundlevelmeter.app.cli import (
     sensitivity_from_fs_db,
     sensitivity_from_mv,
     sensitivity_from_dbv,
@@ -20,7 +20,7 @@ from slm.app.cli import (
     run_measurement,
     SLMShell,
 )
-from slm.constants import REFERENCE_PRESSURE
+from soundlevelmeter.constants import REFERENCE_PRESSURE
 
 
 # ---------------------------------------------------------------------------
@@ -115,7 +115,7 @@ class TestSensitivityHelpers:
 class TestCLIArgParsing:
 
     def test_measure_flag(self):
-        from slm.app.__main__ import _build_parser
+        from soundlevelmeter.app.__main__ import _build_parser
         parser = _build_parser()
         args = parser.parse_args([
             "--measure", "LAeq", "LAFmax",
@@ -124,44 +124,44 @@ class TestCLIArgParsing:
         assert args.measure == ["LAeq", "LAFmax"]
 
     def test_sensitivity_fs_db(self):
-        from slm.app.__main__ import _build_parser, _resolve_sensitivity
+        from soundlevelmeter.app.__main__ import _build_parser, _resolve_sensitivity
         parser = _build_parser()
         args = parser.parse_args(["--file", "f.wav", "--fs-db", "128.1", "--measure", "LAeq"])
         assert _resolve_sensitivity(args) == pytest.approx(sensitivity_from_fs_db(128.1))
 
     def test_sensitivity_mv(self):
-        from slm.app.__main__ import _build_parser, _resolve_sensitivity
+        from soundlevelmeter.app.__main__ import _build_parser, _resolve_sensitivity
         parser = _build_parser()
         args = parser.parse_args(["--file", "f.wav", "--sensitivity-mv", "50", "--measure", "LAeq"])
         assert _resolve_sensitivity(args) == pytest.approx(sensitivity_from_mv(50.0))
 
     def test_sensitivity_dbv(self):
-        from slm.app.__main__ import _build_parser, _resolve_sensitivity
+        from soundlevelmeter.app.__main__ import _build_parser, _resolve_sensitivity
         parser = _build_parser()
         args = parser.parse_args(["--file", "f.wav", "--sensitivity-dbv", "-20", "--measure", "LAeq"])
         assert _resolve_sensitivity(args) == pytest.approx(sensitivity_from_dbv(-20.0))
 
     def test_no_sensitivity_flag_returns_none(self):
-        from slm.app.__main__ import _build_parser, _resolve_sensitivity
+        from soundlevelmeter.app.__main__ import _build_parser, _resolve_sensitivity
         parser = _build_parser()
         args = parser.parse_args(["--file", "f.wav", "--measure", "LAeq"])
         assert _resolve_sensitivity(args) is None
 
     def test_mutually_exclusive_sensitivity_flags(self):
-        from slm.app.__main__ import _build_parser
+        from soundlevelmeter.app.__main__ import _build_parser
         parser = _build_parser()
         with pytest.raises(SystemExit):
             parser.parse_args(["--fs-db", "128.1", "--sensitivity-mv", "50"])
 
     def test_dt_default(self):
-        from slm.app.__main__ import _build_parser
+        from soundlevelmeter.app.__main__ import _build_parser
         parser = _build_parser()
         args = parser.parse_args(["--file", "f.wav", "--measure", "LAeq"])
         # --dt default is None; main() applies the 1.0 fallback when building SLMConfig
         assert args.dt is None
 
     def test_output_default(self):
-        from slm.app.__main__ import _build_parser
+        from soundlevelmeter.app.__main__ import _build_parser
         parser = _build_parser()
         args = parser.parse_args(["--file", "f.wav", "--measure", "LAeq"])
         # --output default is None; main() applies the "output/measurement" fallback

@@ -37,7 +37,7 @@ import numpy as np
 import pytest
 from scipy import signal as sig
 
-from slm.octave_band import PluginOctaveBand
+from soundlevelmeter.octave_band import PluginOctaveBand
 
 # ---------------------------------------------------------------------------
 # IEC 61260-1:2014 constants

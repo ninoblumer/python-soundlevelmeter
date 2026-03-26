@@ -21,7 +21,7 @@ import types
 
 import numpy as np
 
-from slm.time_weighting import PluginImpulseTimeWeighting
+from soundlevelmeter.time_weighting import PluginImpulseTimeWeighting
 
 SAMPLERATE = 48_000
 BLOCKSIZE  = 4_096

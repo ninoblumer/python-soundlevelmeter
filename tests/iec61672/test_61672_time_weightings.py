@@ -16,7 +16,7 @@ import types
 import numpy as np
 import pytest
 
-from slm.time_weighting import PluginFastTimeWeighting, PluginSlowTimeWeighting
+from soundlevelmeter.time_weighting import PluginFastTimeWeighting, PluginSlowTimeWeighting
 
 
 # ---------------------------------------------------------------------------

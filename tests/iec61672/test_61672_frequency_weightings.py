@@ -14,7 +14,7 @@ import types
 import numpy as np
 import pytest
 
-from slm.frequency_weighting import PluginAWeighting, PluginCWeighting, PluginZWeighting
+from soundlevelmeter.frequency_weighting import PluginAWeighting, PluginCWeighting, PluginZWeighting
 
 
 # ---------------------------------------------------------------------------
