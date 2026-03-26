@@ -4,11 +4,11 @@ from typing import TypeVar, TYPE_CHECKING
 
 import numpy as np
 
-from slm.processing_element import ProcessingElement
+from soundlevelmeter.processing_element import ProcessingElement
 
 if TYPE_CHECKING:
-    from slm.bus import Bus
-    from slm.meter import Meter
+    from soundlevelmeter.bus import Bus
+    from soundlevelmeter.meter import Meter
 
 
 
@@ -27,7 +27,7 @@ class Plugin(ProcessingElement, ABC):
     def __init__(self, *, input: "Plugin | Bus", width: int = 1, **kwargs):
         super().__init__(**kwargs)
 
-        from slm.bus import Bus
+        from soundlevelmeter.bus import Bus
         if isinstance(input, Bus):
             self.bus = input
         else:

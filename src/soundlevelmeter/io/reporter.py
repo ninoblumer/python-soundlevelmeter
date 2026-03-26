@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Callable
 import numpy as np
 
 if TYPE_CHECKING:
-    from slm.plugin_meter import PluginMeter
+    from soundlevelmeter.plugin_meter import PluginMeter
 
 
 def _fmt_timestamp(td: timedelta) -> str:

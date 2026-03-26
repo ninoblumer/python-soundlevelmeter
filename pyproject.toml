@@ -3,11 +3,23 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "open-spl"
+name = "soundlevelmeter"
 version = "0.1.0"
 description = "IEC 61672-1 Sound Level Meter"
+readme = "README.md"
 requires-python = ">=3.12"
 license = { file = "LICENSE" }
+authors = [{ name = "Nino Blumer" }]
+keywords = ["sound level meter", "acoustics", "IEC 61672", "audio", "measurement"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Multimedia :: Sound/Audio :: Analysis",
+]
 dependencies = [
     "numpy",
     "scipy",
@@ -16,9 +28,11 @@ dependencies = [
     "pyoctaveband",
 ]
 
+[project.urls]
+Repository = "https://github.com/ninoblumer/python-soundlevelmeter"
+
 [project.scripts]
-slm = "slm.app.__main__:main"
+slm = "soundlevelmeter.app.__main__:main"
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["slm*", "util*"]
+where = ["src"]

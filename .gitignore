@@ -2,3 +2,7 @@
 output/**
 .claude/**
 **/__pycache__
+*.egg-info/
+venv/
+dist/
+build/

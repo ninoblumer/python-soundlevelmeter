@@ -1,6 +1,6 @@
 """Public API for slm.app — configuration, CLI helpers, and measurement runners."""
-from slm.app.config import SLMConfig
-from slm.app.cli import (
+from soundlevelmeter.app.config import SLMConfig
+from soundlevelmeter.app.cli import (
     SLMShell,
     sensitivity_from_fs_db,
     sensitivity_from_mv,

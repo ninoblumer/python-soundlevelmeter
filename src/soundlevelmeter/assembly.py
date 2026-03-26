@@ -2,7 +2,7 @@
 
 Usage::
 
-    from slm.assembly import parse_metric, build_chain
+    from soundlevelmeter.assembly import parse_metric, build_chain
 
     specs  = [parse_metric(name) for name in ["LAeq", "LAFmax", "LZeq:bands:63-8000"]]
     build_chain(specs, engine)
@@ -14,9 +14,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from slm.bus import Bus
-    from slm.engine import Engine
-    from slm.plugin_meter import PluginMeter
+    from soundlevelmeter.bus import Bus
+    from soundlevelmeter.engine import Engine
+    from soundlevelmeter.plugin_meter import PluginMeter
 
 
 # ---------------------------------------------------------------------------
@@ -198,15 +198,15 @@ def build_chain(
         engine: The :class:`~slm.engine.Engine` instance to attach buses to.
                 Meters are registered with ``engine.reporter``.
     """
-    from slm.frequency_weighting import (
+    from soundlevelmeter.frequency_weighting import (
         PluginAWeighting, PluginCWeighting, PluginZWeighting,
     )
-    from slm.time_weighting import (
+    from soundlevelmeter.time_weighting import (
         PluginFastTimeWeighting, PluginSlowTimeWeighting, PluginImpulseTimeWeighting,
         PluginSquare,
     )
-    from slm.octave_band import PluginOctaveBand
-    from slm.meter import (
+    from soundlevelmeter.octave_band import PluginOctaveBand
+    from soundlevelmeter.meter import (
         LeqAccumulator, MaxAccumulator, MinAccumulator, LastAccumulatingMeter,
         LeqMovingMeter, MaxMovingMeter, MinMovingMeter,
         LEAccumulator, LEMovingMeter,

@@ -1,4 +1,4 @@
-# open-spl
+# soundlevelmeter
 
 An IEC 61672-1 compliant Sound Level Meter (SLM) in Python. Measures LAeq, LCeq, LZeq,
 LASmax, LAFmax, octave-band levels (1/1, 1/3, 1/6, …), sound exposure levels (LE), and more —
@@ -9,15 +9,15 @@ from WAV files or a live microphone.
 ## Installation
 
 ```bash
-git clone https://github.com/ninoblumer/open-spl
-cd open-spl
+git clone https://github.com/ninoblumer/PySoundLevelMeter
+cd PySoundLevelMeter
 python -m venv venv
 source venv/bin/activate      # macOS / Linux
 # venv\Scripts\activate       # Windows
 pip install -r requirements.txt
 ```
 
-To use `slm` as a shell command instead, you can install this tool directly. For example with `pip install --user git+https://github.com/ninoblumer/open-spl.git@main`
+To use `slm` as a shell command instead, you can install this tool directly. For example with `pip install --user git+https://github.com/ninoblumer/PySoundLevelMeter.git@main`
 
 
 ---
@@ -211,7 +211,7 @@ of metric name strings, reusing shared buses and plugins where possible.
 ### High-level
 
 ```python
-from slm.app import run_measurement, calibrate_from_file, SLMConfig, sensitivity_from_fs_db
+from soundlevelmeter.app import run_measurement, calibrate_from_file, SLMConfig, sensitivity_from_fs_db
 
 sens = calibrate_from_file("cal.wav", cal_level=94.0, cal_freq=1000.0)
 config = SLMConfig.from_toml("config.toml")
@@ -221,8 +221,8 @@ run_measurement("recording.wav", sens, config, print_to_console=True)
 ### Mid-level (declarative)
 
 ```python
-from slm import Engine, build_chain, parse_metric
-from slm.io import FileController
+from soundlevelmeter import Engine, build_chain, parse_metric
+from soundlevelmeter.io import FileController
 
 controller = FileController("recording.wav", blocksize=1024)
 controller.set_sensitivity(sens, unit="V")
@@ -239,11 +239,11 @@ engine.reporter.write("output/measurement")
 ### Low-level (manual)
 
 ```python
-from slm import Engine
-from slm.io import FileController
-from slm.frequency_weighting import PluginAWeighting
-from slm.time_weighting import PluginFastTimeWeighting
-from slm.meter import LeqAccumulator, MaxAccumulator
+from soundlevelmeter import Engine
+from soundlevelmeter.io import FileController
+from soundlevelmeter.frequency_weighting import PluginAWeighting
+from soundlevelmeter.time_weighting import PluginFastTimeWeighting
+from soundlevelmeter.meter import LeqAccumulator, MaxAccumulator
 
 controller = FileController("recording.wav", blocksize=1024)
 controller.set_sensitivity(sens, unit="V")

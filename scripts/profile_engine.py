@@ -12,10 +12,10 @@ import io
 import pstats
 import numpy as np
 
-from slm.io.controller import Controller
-from slm.engine import Engine
-from slm.assembly import parse_metric, build_chain
-from slm.io.reporter import Reporter
+from soundlevelmeter.io.controller import Controller
+from soundlevelmeter.engine import Engine
+from soundlevelmeter.assembly import parse_metric, build_chain
+from soundlevelmeter.io.reporter import Reporter
 
 
 # ---------------------------------------------------------------------------

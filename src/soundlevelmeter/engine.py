@@ -3,12 +3,12 @@ import warnings
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from slm.bus import Bus
-from slm.io.reporter import Reporter
+from soundlevelmeter.bus import Bus
+from soundlevelmeter.io.reporter import Reporter
 
 if TYPE_CHECKING:
-    from slm.frequency_weighting import PluginFrequencyWeighting
-    from slm.io.controller import Controller
+    from soundlevelmeter.frequency_weighting import PluginFrequencyWeighting
+    from soundlevelmeter.io.controller import Controller
 
 
 class Engine:

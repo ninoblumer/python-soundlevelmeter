@@ -6,7 +6,7 @@ import sys
 from datetime import timedelta
 from typing import Callable
 
-from slm.io.reporter import _fmt_timestamp
+from soundlevelmeter.io.reporter import _fmt_timestamp
 
 
 def make_display_fn(mode: str, db_min: float = 40.0, db_max: float = 120.0,

@@ -5,13 +5,13 @@ from math import ceil
 
 import numpy as np
 
-from slm.processing_element import ProcessingElement
-from slm.fifo import FIFO
+from soundlevelmeter.processing_element import ProcessingElement
+from soundlevelmeter.fifo import FIFO
 
 if TYPE_CHECKING:
-    from slm.bus import Bus
-    from slm.plugin import Plugin
-    from slm.plugin_meter import PluginMeter
+    from soundlevelmeter.bus import Bus
+    from soundlevelmeter.plugin import Plugin
+    from soundlevelmeter.plugin_meter import PluginMeter
 
 
 class Meter(ProcessingElement, ABC):

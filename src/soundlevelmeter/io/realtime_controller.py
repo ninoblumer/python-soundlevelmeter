@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from slm.io.controller import Controller
+from soundlevelmeter.io.controller import Controller
 
 
 class RealtimeController(Controller):
