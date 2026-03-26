@@ -4,7 +4,7 @@ import types
 import numpy as np
 import pytest
 
-from soundlevelmeter.meter import (
+from slm.meter import (
     LeqAccumulator, MaxAccumulator, MinAccumulator,
     LeqMovingMeter, MaxMovingMeter, MinMovingMeter, LastMovingMeter,
 )

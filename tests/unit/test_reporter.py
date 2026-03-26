@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from soundlevelmeter.io.reporter import Reporter, _fmt_timestamp
+from slm.io.reporter import Reporter, _fmt_timestamp
 
 
 # ---------------------------------------------------------------------------

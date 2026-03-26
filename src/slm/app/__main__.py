@@ -103,7 +103,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def _resolve_sensitivity(args: argparse.Namespace) -> float | None:
     """Return sensitivity in V from the CLI flags, or None if none were given."""
-    from soundlevelmeter.app.cli import sensitivity_from_fs_db, sensitivity_from_dbv, sensitivity_from_mv
+    from slm.app.cli import sensitivity_from_fs_db, sensitivity_from_dbv, sensitivity_from_mv
     if args.fs_db is not None:
         return sensitivity_from_fs_db(args.fs_db)
     if args.sensitivity_dbv is not None:
@@ -133,12 +133,12 @@ def main() -> None:
     # ------------------------------------------------------------------ #
     # --list-devices: print table and exit
     if args.list_devices:
-        from soundlevelmeter.io.sounddevice_controller import SounddeviceController
+        from slm.io.sounddevice_controller import SounddeviceController
         devices = SounddeviceController.list_devices()
         if not devices:
             print("No input devices found.")
         else:
-            from soundlevelmeter.app.cli import _fmt_device_table
+            from slm.app.cli import _fmt_device_table
             print(_fmt_device_table(devices))
         return
 
@@ -150,14 +150,14 @@ def main() -> None:
                  and not args.calibrate and not args.measure and not args.config)
     if no_action:
         # Bare invocation — open an empty shell
-        from soundlevelmeter.app.cli import SLMShell
+        from slm.app.cli import SLMShell
         SLMShell().cmdloop()
         return
 
     if args.interactive:
         # --interactive alongside other flags: pre-populate shell state
-        from soundlevelmeter.app.cli import SLMShell
-        from soundlevelmeter.app.config import SLMConfig
+        from slm.app.cli import SLMShell
+        from slm.app.config import SLMConfig
 
         if args.config:
             config = SLMConfig.from_toml(args.config)
@@ -199,7 +199,7 @@ def main() -> None:
             parser.error("--calibrate requires --file or --device")
         if _resolve_sensitivity(args) is not None:
             parser.error("--calibrate cannot be combined with a sensitivity flag")
-        from soundlevelmeter.app.cli import calibrate_from_file, calibrate_from_device, _fmt_sensitivity
+        from slm.app.cli import calibrate_from_file, calibrate_from_device, _fmt_sensitivity
         if args.file:
             sens = calibrate_from_file(args.file, cal_freq=args.cal_freq, cal_level=args.cal_level)
         else:
@@ -216,8 +216,8 @@ def main() -> None:
     # ------------------------------------------------------------------ #
     # One-shot measurement                                                 #
     # ------------------------------------------------------------------ #
-    from soundlevelmeter.app.config import SLMConfig
-    from soundlevelmeter.app.cli import run_measurement
+    from slm.app.config import SLMConfig
+    from slm.app.cli import run_measurement
 
     if args.config:
         config = SLMConfig.from_toml(args.config)
@@ -253,7 +253,7 @@ def main() -> None:
     if args.file:
         run_measurement(args.file, sens, config, print_to_console=True, realtime=args.realtime)
     else:
-        from soundlevelmeter.app.cli import run_realtime_measurement
+        from slm.app.cli import run_realtime_measurement
         run_realtime_measurement(
             sens, config,
             device=args.device,

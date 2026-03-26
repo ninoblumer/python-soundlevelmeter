@@ -1,7 +1,7 @@
 """Core calibration routine — controller-agnostic."""
 from __future__ import annotations
 
-from soundlevelmeter.constants import REFERENCE_PRESSURE
+from slm.constants import REFERENCE_PRESSURE
 
 
 def calibrate_sensitivity(
@@ -44,15 +44,15 @@ def calibrate_sensitivity(
 
     import numpy as np
 
-    from soundlevelmeter.engine import Engine
-    from soundlevelmeter.frequency_weighting import PluginZWeighting, PluginBandpass
-    from soundlevelmeter.meter import LeqAccumulator, LeqMovingMeter
+    from slm.engine import Engine
+    from slm.frequency_weighting import PluginZWeighting, PluginBandpass
+    from slm.meter import LeqAccumulator, LeqMovingMeter
 
     use_stability = stability_window is not None
     dt = 0.5 if use_stability else 1e9   # dt=1e9 → reporter never fires (file path)
 
     if use_stability:
-        from soundlevelmeter.io.reporter import Reporter
+        from slm.io.reporter import Reporter
 
         _history: deque[float] = deque(maxlen=stability_window)
 

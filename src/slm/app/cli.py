@@ -6,10 +6,10 @@ import math
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from soundlevelmeter.constants import REFERENCE_PRESSURE
+from slm.constants import REFERENCE_PRESSURE
 
 if TYPE_CHECKING:
-    from soundlevelmeter.app.config import SLMConfig
+    from slm.app.config import SLMConfig
 
 
 # ---------------------------------------------------------------------------
@@ -80,8 +80,8 @@ def calibrate_from_file(
 
     Returns a value suitable for ``controller.set_sensitivity(result, unit="V")``.
     """
-    from soundlevelmeter.io.file_controller import FileController
-    from soundlevelmeter.calibration import calibrate_sensitivity
+    from slm.io.file_controller import FileController
+    from slm.calibration import calibrate_sensitivity
 
     controller = FileController(str(wav_path), blocksize=blocksize)
     controller.set_sensitivity(1.0, unit="V")   # dummy — just need raw WAV values
@@ -109,8 +109,8 @@ def calibrate_from_device(
 
     Returns a value suitable for ``controller.set_sensitivity(result, unit="V")``.
     """
-    from soundlevelmeter.io.sounddevice_controller import SounddeviceController
-    from soundlevelmeter.calibration import calibrate_sensitivity
+    from slm.io.sounddevice_controller import SounddeviceController
+    from slm.calibration import calibrate_sensitivity
 
     controller = SounddeviceController(
         device=device, samplerate=samplerate, blocksize=blocksize
@@ -146,11 +146,11 @@ def run_measurement(
     """Parse *config.metrics*, build the plugin chain, run the engine, write results."""
     if sensitivity_v <= 0:
         raise ValueError(f"sensitivity_v must be positive, got {sensitivity_v}")
-    from soundlevelmeter.assembly import parse_metric, build_chain
-    from soundlevelmeter.io.file_controller import FileController
-    from soundlevelmeter.engine import Engine
-    from soundlevelmeter.io.reporter import Reporter
-    from soundlevelmeter.io.display import make_display_fn
+    from slm.assembly import parse_metric, build_chain
+    from slm.io.file_controller import FileController
+    from slm.engine import Engine
+    from slm.io.reporter import Reporter
+    from slm.io.display import make_display_fn
 
     specs = [parse_metric(m) for m in config.metrics]
 
@@ -191,11 +191,11 @@ def run_realtime_measurement(
     """
     if sensitivity_v <= 0:
         raise ValueError(f"sensitivity_v must be positive, got {sensitivity_v}")
-    from soundlevelmeter.assembly import parse_metric, build_chain
-    from soundlevelmeter.io.sounddevice_controller import SounddeviceController
-    from soundlevelmeter.engine import Engine
-    from soundlevelmeter.io.reporter import Reporter
-    from soundlevelmeter.io.display import make_display_fn
+    from slm.assembly import parse_metric, build_chain
+    from slm.io.sounddevice_controller import SounddeviceController
+    from slm.engine import Engine
+    from slm.io.reporter import Reporter
+    from slm.io.display import make_display_fn
 
     specs = [parse_metric(m) for m in config.metrics]
 
@@ -251,7 +251,7 @@ class SLMShell(cmd.Cmd):
         config: "SLMConfig | None" = None,
     ) -> None:
         super().__init__()
-        from soundlevelmeter.app.config import SLMConfig
+        from slm.app.config import SLMConfig
         self._config = config if config is not None else SLMConfig()
         self._wav_path = wav_path
         self._sensitivity_v = sensitivity_v
@@ -283,7 +283,7 @@ Examples:
   add LZeq:bands:63-8000       Z-weighted 1/1-oct octave bands 63-8000 Hz
   add LAeq:bands:1/3:31-16000  A-weighted 1/3-oct bands
 """
-        from soundlevelmeter.assembly import parse_metric
+        from slm.assembly import parse_metric
         metric = arg.strip()
         if not metric:
             print("Usage: add METRIC")
@@ -323,7 +323,7 @@ Examples:
   device 0          select device 0
   device Focusrite  select first device whose name contains 'Focusrite'
 """
-        from soundlevelmeter.io.sounddevice_controller import SounddeviceController
+        from slm.io.sounddevice_controller import SounddeviceController
         arg = arg.strip()
         if not arg:
             devices = SounddeviceController.list_devices()
@@ -494,7 +494,7 @@ Use this when you have a physical calibrator and a recording of it; use
 
     def do_load(self, arg: str) -> None:
         """load PATH.toml — load configuration from a TOML file."""
-        from soundlevelmeter.app.config import SLMConfig
+        from slm.app.config import SLMConfig
         path = arg.strip()
         if not path:
             print("Usage: load PATH.toml")
@@ -547,7 +547,7 @@ When disabled (default), the file is processed as fast as possible.
 
     def do_tree(self, _: str) -> None:
         """tree — print the planned plugin chain for the current metrics."""
-        from soundlevelmeter.assembly import parse_metric
+        from slm.assembly import parse_metric
 
         if not self._config.metrics:
             print("No metrics added.  Use: add METRIC")
@@ -692,7 +692,7 @@ When disabled (default), the file is processed as fast as possible.
 
     def do_inspect(self, arg: str) -> None:
         """inspect METRIC — show detailed human-readable info for a metric."""
-        from soundlevelmeter.assembly import parse_metric
+        from slm.assembly import parse_metric
 
         name = arg.strip()
         if not name:

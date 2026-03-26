@@ -5,7 +5,7 @@ import numpy as np
 from scipy.signal import lfilter, lfilter_zi
 from numba import jit
 
-from soundlevelmeter.plugin_meter import PluginMeter
+from slm.plugin_meter import PluginMeter
 
 
 class PluginTimeWeighting(PluginMeter, ABC):

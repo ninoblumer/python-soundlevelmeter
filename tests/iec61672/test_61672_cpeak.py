@@ -28,8 +28,8 @@ import types
 import numpy as np
 import pytest
 
-from soundlevelmeter.frequency_weighting import PluginCWeighting
-from soundlevelmeter.constants import REFERENCE_PRESSURE
+from slm.frequency_weighting import PluginCWeighting
+from slm.constants import REFERENCE_PRESSURE
 
 p0         = REFERENCE_PRESSURE   # 20 µPa
 SAMPLERATE = 48_000

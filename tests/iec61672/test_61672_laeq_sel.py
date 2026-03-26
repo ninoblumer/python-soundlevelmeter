@@ -20,9 +20,9 @@ import types
 import numpy as np
 import pytest
 
-from soundlevelmeter.frequency_weighting import PluginAWeighting
-from soundlevelmeter.meter import LeqAccumulator, LEAccumulator
-from soundlevelmeter.constants import REFERENCE_PRESSURE
+from slm.frequency_weighting import PluginAWeighting
+from slm.meter import LeqAccumulator, LEAccumulator
+from slm.constants import REFERENCE_PRESSURE
 
 p0        = REFERENCE_PRESSURE   # 20 µPa
 T0        = 1.0                  # SEL reference duration (s)

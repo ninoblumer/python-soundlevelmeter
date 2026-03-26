@@ -33,7 +33,7 @@ dependencies = [
 Repository = "https://github.com/ninoblumer/python-soundlevelmeter"
 
 [project.scripts]
-slm = "soundlevelmeter.app.__main__:main"
+slm = "slm.app.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

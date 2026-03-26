@@ -3,7 +3,7 @@ import numpy as np
 from pyoctaveband import WeightingFilter
 from scipy.signal import butter, sosfilt, sosfilt_zi
 
-from soundlevelmeter.plugin_meter import PluginMeter
+from slm.plugin_meter import PluginMeter
 
 
 

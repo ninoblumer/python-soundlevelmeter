@@ -18,7 +18,7 @@ except ImportError as _exc:
         "Install it with: pip install sounddevice"
     ) from _exc
 
-from soundlevelmeter.io.realtime_controller import RealtimeController
+from slm.io.realtime_controller import RealtimeController
 
 
 class SounddeviceController(RealtimeController):
@@ -150,7 +150,7 @@ class SounddeviceController(RealtimeController):
         with stability detection, then stops the stream and stores the result.
         The stream is stopped automatically once the reading has converged.
         """
-        from soundlevelmeter.calibration import calibrate_sensitivity
+        from slm.calibration import calibrate_sensitivity
 
         self.set_sensitivity(1.0, unit="V")
         self.start()

@@ -7,10 +7,10 @@ from scipy import signal as sig
 
 from pyoctaveband import OctaveFilterBank
 
-from soundlevelmeter.plugin_meter import PluginMeter
+from slm.plugin_meter import PluginMeter
 
 if TYPE_CHECKING:
-    from soundlevelmeter.plugin import Plugin
+    from slm.plugin import Plugin
 
 
 

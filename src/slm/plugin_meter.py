@@ -3,10 +3,10 @@ from abc import ABC
 import numpy as np
 
 
-from soundlevelmeter.plugin import Plugin
+from slm.plugin import Plugin
 
-from soundlevelmeter.meter import Meter, TMeter
-from soundlevelmeter.constants import REFERENCE_PRESSURE
+from slm.meter import Meter, TMeter
+from slm.constants import REFERENCE_PRESSURE
 class PluginMeter(Plugin, ABC):
     meters: dict[str, Meter]
 

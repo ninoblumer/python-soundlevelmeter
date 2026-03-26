@@ -5,7 +5,7 @@ from typing import Generator
 import numpy as np
 import soundfile as sf
 
-from soundlevelmeter.io.controller import Controller
+from slm.io.controller import Controller
 
 
 class FileController(Controller):

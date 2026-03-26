@@ -3,12 +3,12 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from soundlevelmeter.processing_element import ProcessingElement
-from soundlevelmeter.frequency_weighting import PluginFrequencyWeighting, PluginZWeighting
+from slm.processing_element import ProcessingElement
+from slm.frequency_weighting import PluginFrequencyWeighting, PluginZWeighting
 
 if TYPE_CHECKING:
-    from soundlevelmeter.plugin import Plugin, TPlugin
-    from soundlevelmeter.meter import Meter, TMeter
+    from slm.plugin import Plugin, TPlugin
+    from slm.meter import Meter, TMeter
 
 
 

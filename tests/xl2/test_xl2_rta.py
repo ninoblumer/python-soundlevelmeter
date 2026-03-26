@@ -11,10 +11,10 @@ attenuation at low bands, but measurement shows no systematic HPF pattern.
 """
 import numpy as np
 
-from soundlevelmeter.engine import Engine
-from soundlevelmeter.io.file_controller import FileController
-from soundlevelmeter.frequency_weighting import PluginZWeighting
-from soundlevelmeter.octave_band import PluginOctaveBand
+from slm.engine import Engine
+from slm.io.file_controller import FileController
+from slm.frequency_weighting import PluginZWeighting
+from slm.octave_band import PluginOctaveBand
 
 TOLERANCE_RTA_DB = 0.2
 
